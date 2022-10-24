@@ -1,4 +1,4 @@
-# Final-Project-Joko-Kendil-Startup-Campus
+# Final Project Backend Startup Campus Kelompok Joko Kendil
 
 This project is built with [Python](https://www.python.org/) and [Flask](https://flask.palletsprojects.com/en/2.2.x/).
 
