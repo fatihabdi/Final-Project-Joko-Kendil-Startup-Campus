@@ -16,8 +16,9 @@ The repository is structured as follows:
 ### Prerequisites
 
 - Docker
-- Python 3.9
-- Postman
+- Composer
+- PHP
+- MySQL
 
 # Core API
 
