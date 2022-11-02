@@ -17,6 +17,8 @@ class CreateOrders extends Migration
             $table->id();
             $table->foreignId('users_id')->references('id')->on('users');
             $table->foreignId('shipping_address_id')->references('id')->on('shipping_address');
+            $table->string('status');
+            $table->string('shipping_method');
             $table->timestamp('created_on')->nullable();
         });
     }
