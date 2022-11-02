@@ -15,7 +15,9 @@ class CreateOrders extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignId('users_id')->references('id')->on('users');
+            $table->foreignId('shipping_address_id')->references('id')->on('shipping_address');
+            $table->timestamp('created_on')->nullable();
         });
     }
 
