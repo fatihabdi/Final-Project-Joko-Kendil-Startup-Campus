@@ -19,7 +19,7 @@ class CreateOrders extends Migration
             $table->foreignId('shipping_address_id')->references('id')->on('shipping_address');
             $table->string('status');
             $table->string('shipping_method');
-            $table->timestamp();
+            $table->timestamps();
         });
     }
 
