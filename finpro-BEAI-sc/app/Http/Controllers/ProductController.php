@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class ProductController extends Controller
 {
@@ -10,8 +11,10 @@ class ProductController extends Controller
         return "Halaman Get Product List";
     }
 
-    public function categories() {
-        return "Halaman Categories";
+    public function categories(Request $request) {
+        $user = User::where('email', $request->input('email'))->where('password', $request->input('password'))->first();
+        // dd($user);
+        return $user;
     }
 
     public function search_product() {

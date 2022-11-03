@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
@@ -23,6 +24,18 @@ Route::post('/sign-up', [AuthController::class, 'sign_up'])
     ->name('sign-up');
 Route::post('/sign-in', [AuthController::class, 'sign_in'])
     ->name('sign-in');
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/orders', [AdminController::class, 'get_order'])
+        ->name('admin.order');
+    Route::post('/products', [AdminController::class, 'create_product'])
+        ->name('admin.product');
+    Route::post('/categories', [AdminController::class, 'create_category'])
+        ->name('admin.category');
+    Route::get('/sales', [AdminController::class, 'get_total_sales'])
+        ->name('admin.sale');
+});
+
 Route::get('/categories', [ProductController::class, 'categories'])
     ->name('categories');
 Route::post('/order', [OrderController::class, 'create_order'])
