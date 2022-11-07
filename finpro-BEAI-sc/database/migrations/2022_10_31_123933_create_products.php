@@ -20,6 +20,7 @@ class CreateProducts extends Migration
             $table->boolean('is_new');
             $table->integer('category');
             $table->integer('price');
+            $table->timestamps();
         });
     }
 
