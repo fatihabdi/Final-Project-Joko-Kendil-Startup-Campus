@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/sign-up', [AuthController::class, 'sign_up'])
+Route::post('/sign-up', [AuthController::class, 'register'])
     ->name('sign-up');
 Route::post('/sign-in', [AuthController::class, 'sign_in'])
     ->name('sign-in');
