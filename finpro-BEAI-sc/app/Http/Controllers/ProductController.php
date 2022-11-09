@@ -68,12 +68,11 @@ class ProductController extends Controller
             $product = Product::find($id);
             $json = new Response([
                 'id' => $product->id,
-                'title' => $product->name,
-                'price' => $product->price,
-                'stock' => $product->stock,
+                'title' => $product->product_name,
                 'description' => $product->description,
-                'image' => $product->image,
-                'category_id' => $product->category_id,
+                'is_new' => $product->is_new,
+                'category' => $product->category,
+                'price' => $product->price,
             ]);
             return new Response([
                 'status' => 'success',
