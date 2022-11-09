@@ -58,16 +58,9 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
         $token = Auth::login($user);
-        // dd($token);
         User::where('id',$user->id)->update(['token' => $token]);
         return response()->json([
-            'status' => 'success',
-            'message' => 'User created successfully',
-            'user' => $user,
-            'authorisation' => [
-                'token' => $token,
-                'type' => 'bearer',
-            ]
+            'message' => 'success, user created',
         ]);
     }
 
