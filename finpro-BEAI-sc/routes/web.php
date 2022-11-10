@@ -75,7 +75,7 @@ Route::prefix('user')->group(function () {
         ->name('cart.shipping_address');
     Route::post('/shipping_address', [UserController::class, 'change_shipping_address'])
         ->name('user.change_shipping_address');
-    Route::put('/balance', [UserController::class, 'top_up'])
+    Route::post('/balance', [UserController::class, 'top_up'])
         ->name('user.top_up');
     Route::get('/balance', [UserController::class, 'get_balance'])
         ->name('user.balance');
