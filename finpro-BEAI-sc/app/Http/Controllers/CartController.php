@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Cart;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
@@ -10,7 +12,8 @@ class CartController extends Controller
         return "Halaman User Cart";
     }
 
-    public function delete_item_cart() {
+    public function delete_item_cart($id) {
+        Cart::where('product_id',$id)->where('user_id', Auth::user()->id)->update(['is_deleted'=>1]);
         return "Halaman Delete Item Cart";
     }
 

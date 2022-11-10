@@ -19,6 +19,7 @@ class CreateCarts extends Migration
             $table->foreignId("product_id")->references("id")->on("products");
             $table->integer("quantity");
             $table->string("size", 2);
+            $table->boolean('id_deleted')->default(0);
             $table->timestamps();
         });
     }

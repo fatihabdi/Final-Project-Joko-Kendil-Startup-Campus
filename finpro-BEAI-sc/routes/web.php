@@ -64,7 +64,7 @@ Route::prefix('cart')->group(function () {
         ->name('cart.user_cart');
     Route::post('/', [productController::class, 'add_to_cart'])
         ->name('cart.add');
-    Route::delete('/cart_id', [CartController::class, 'delete_cart_item'])
+    Route::delete('/{cart_id}', [CartController::class, 'delete_cart_item'])
         ->name('cart.delete');
 });
 
