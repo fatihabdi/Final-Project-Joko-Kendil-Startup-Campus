@@ -33,9 +33,11 @@ class CartController extends Controller
         ]);
     }
 
-    public function delete_item_cart($id) {
+    public function delete_cart_item($id) {
         Cart::where('product_id',$id)->where('user_id', Auth::user()->id)->update(['is_deleted'=>1]);
-        return "Halaman Delete Item Cart";
+        return response()->json([
+            'message' => 'Cart Deleted'
+        ]);
     }
 
     public function get_user_shipping_address() {
