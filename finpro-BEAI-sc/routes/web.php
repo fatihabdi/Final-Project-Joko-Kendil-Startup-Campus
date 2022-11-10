@@ -43,13 +43,11 @@ Route::post('/order', [OrderController::class, 'create_order'])
 Route::get('/order', [OrderController::class, 'user_order'])
     ->name('order.user');
 
-Route::middleware('auth:sanctum')->group(function() {
-    Route::prefix('home')->group(function () {
-        Route::get('/banner', [HomeController::class, 'get_banner'])
-            ->name('home.banner');
-        Route::get('/category', [HomeController::class, 'get_category'])
-            ->name('home.category');
-    });
+Route::prefix('home')->group(function () {
+    Route::get('/banner', [HomeController::class, 'get_banner'])
+        ->name('home.banner');
+    Route::get('/category', [HomeController::class, 'get_category'])
+        ->name('home.category');
 });
 
 Route::prefix('products')->group(function () {

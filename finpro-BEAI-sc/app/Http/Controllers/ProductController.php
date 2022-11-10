@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Cart;
 use App\Models\Product;
+use App\Models\Cart;
 use App\Models\Category;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Exception;
-use Throwable;
 use Carbon\Carbon;
+use Throwable;
+use Exception;
 
 class ProductController extends Controller
 {
@@ -49,28 +49,18 @@ class ProductController extends Controller
     }
 
     public function categories() {
-        try {
-            $categories = Category::get()->all();
-            $data = [];
-            foreach($categories as $category) {
-                $json = new Response([
-                    'id' => $category->id,
-                    'title' => $category->category_name
-                ]);
-                array_push($data, $json->original);
-            };
-            return new Response([
-                'data' => $data
+        $categories = Category::get()->all();
+        $data = [];
+        foreach($categories as $category) {
+            $json = new Response([
+                'id' => $category->id,
+                'title' => $category->category_name
             ]);
-        } catch (Throwable $th) {
-            return response([
-                'message' => 'Error'
-            ]);
-        } catch (Exception $e) {
-            return response([
-                'message' => 'Error'
-            ]);
-        }
+            array_push($data, $json->original);
+        };
+        return new Response([
+            'data' => $data
+        ]);
     }
 
     public function search_product()
