@@ -20,7 +20,6 @@ class CreateUsersTable extends Migration
             $table->string('phone_number');
             $table->string('password');
             $table->boolean('is_admin');
-            $table->string('token',36);
             $table->timestamps();
         });
     }
