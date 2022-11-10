@@ -16,6 +16,7 @@ class CreateBalances extends Migration
         Schema::create('balances', function (Blueprint $table) {
             $table->id();
             $table->foreignId("user_id")->references("id")->on("users");
+            $table->integer("balance");
             $table->timestamps();
         });
     }

@@ -21,7 +21,7 @@ class ProductController extends Controller
             $products = Product::get()->all();
             $produk = [];
             foreach ($products as $product) {
-                $json = new Response([
+                $json = response()->json([
                     'id' => $product->id,
                     'title' => $product->product_name,
                     'description' => $product->description,
@@ -31,17 +31,17 @@ class ProductController extends Controller
                 ]);
                 array_push($produk, $json->original);
             };
-            return new Response([
+            return response()->json([
                 'status' => 'success',
                 'data' => $produk
             ]);
         } catch (\Throwable $th) {
-            return new Response([
+            return response()->json([
                 'message' => 'Internal Server Error',
                 'error' => $th->getMessage()
             ], 500);
         } catch (\Exception $e) {
-            return new Response([
+            return response()->json([
                 'message' => 'failed',
                 'error' => $e->getMessage()
             ], 409);
@@ -52,7 +52,7 @@ class ProductController extends Controller
         $categories = Category::get()->all();
         $data = [];
         foreach($categories as $category) {
-            $json = new Response([
+            $json = response()->json([
                 'id' => $category->id,
                 'title' => $category->category_name
             ]);
@@ -70,35 +70,21 @@ class ProductController extends Controller
 
     public function add_to_cart(Request $request) {
         try {
-            $item = Cart::where('product_id', $request->input('id'))
-                ->where('size', $request->input('size'))
-                ->get('quantity')->first();
-            if ($item == null) {
-                Cart::create([
-                    'user_id' => Auth::user()->id,
-                    'product_id' => $request->input('id'),
-                    'quantity' => $request->input('quantity'),
-                    'size' => $request->input('size'),
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now()
-                ]);
-            } else {
-                Cart::where('product_id', $request->input('id'))
-                    ->where('size', $request->input('size'))
-                    ->update([
-                        'quantity' => ($item->quantity + $request->input('quantity')),
-                        'updated_at' => Carbon::now()
-                    ]);
-            }
-            return response([
+            $item = Cart::firstOrNew([
+                'product_id' => $request->input('id'),
+                'size' => $request->input('size')
+            ]);
+            $item->quantity += $request->input('quantity');
+            $item->save();
+            return response()->json([
                 'message' => 'Item added to cart'
             ]);
         } catch (Throwable $th) {
-            return response([
+            return response()->json([
                 'message' => 'Failed because '.$th->getMessage()
             ]);
         } catch (Exception $e) {
-            return response([
+            return response()->json([
                 'message' => 'Error because '.$e->getMessage()
             ]);
         }
@@ -106,36 +92,31 @@ class ProductController extends Controller
 
     public function get_product_detail($id)
     {
-        // $route = Routes::find($request->input('route_id'));
-
-        // if ($route == null) {
-        //     return new Response([
-        //         'status' => 'failed',
-        //         'code' => 404,
-        //         'message' => 'Product not found',
-        //     ], 404);
-        // }
         try {
-            $product = Product::find($id);
-            $json = new Response([
+            $product = Product::join('categories', 'products.category', '=', 'categories.id')
+                ->select('products.id', 'product_name', 'description', 'price', 'category', 'category_name')
+                ->where('products.id', $id)->get()->first();
+            $json = response()->json([
                 'id' => $product->id,
                 'title' => $product->product_name,
-                'description' => $product->description,
-                'is_new' => $product->is_new,
-                'category' => $product->category,
+                'size' => ['S', 'M', 'L'],
+                'product_detail' => $product->description,
                 'price' => $product->price,
+                'images_url' => "Not found",
+                'category_id' => $product->category,
+                'category_name' => $product->category_name
             ]);
-            return new Response([
+            return response()->json([
                 'status' => 'success',
                 'data' => $json->original
             ]);
         } catch (\Throwable $th) {
-            return new Response([
+            return response()->json([
                 'message' => 'Internal Server Error',
                 'error' => $th->getMessage()
             ], 500);
         } catch (\Exception $e) {
-            return new Response([
+            return response()->json([
                 'message' => 'failed',
                 'error' => $e->getMessage()
             ], 409);

@@ -33,13 +33,16 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
+        $user_information = response()->json([
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone_number' => $user->phone_number,
+            'type' => "buyer"
+        ]);
         return response()->json([
-                'status' => 'success',
-                'user' => $user,
-                'authorisation' => [
-                    'token' => $token,
-                    'type' => 'bearer',
-                ]
+                'user_information' => $user_information->original,
+                'token' => $token,
+                'message' => 'Login success'
             ]);
 
     }
