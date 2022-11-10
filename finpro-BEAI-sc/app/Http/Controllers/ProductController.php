@@ -106,15 +106,6 @@ class ProductController extends Controller
 
     public function get_product_detail($id)
     {
-        // $route = Routes::find($request->input('route_id'));
-
-        // if ($route == null) {
-        //     return new Response([
-        //         'status' => 'failed',
-        //         'code' => 404,
-        //         'message' => 'Product not found',
-        //     ], 404);
-        // }
         try {
             $product = Product::find($id);
             $json = new Response([

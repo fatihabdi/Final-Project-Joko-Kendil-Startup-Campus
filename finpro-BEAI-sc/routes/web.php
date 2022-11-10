@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/sign-up', [AuthController::class, 'register'])
     ->name('sign-up');
-Route::post('/sign-in', [AuthController::class, 'sign_in'])
+Route::post('/sign-in', [AuthController::class, 'login'])
     ->name('sign-in');
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
