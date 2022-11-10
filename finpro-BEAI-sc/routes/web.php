@@ -24,6 +24,8 @@ Route::post('/sign-up', [AuthController::class, 'register'])
     ->name('sign-up');
 Route::post('/sign-in', [AuthController::class, 'login'])
     ->name('sign-in');
+Route::get('/image/{imagefile}',[HomeController::class,'get_image'])
+    ->name('image.get_image');
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/orders', [AdminController::class, 'get_order'])
