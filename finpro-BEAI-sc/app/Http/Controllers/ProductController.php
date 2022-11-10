@@ -15,8 +15,37 @@ use Carbon\Carbon;
 
 class ProductController extends Controller
 {
-    public function get_product_list() {
-        return "Halaman Get Product List";
+    public function get_product_list()
+    {
+        try {
+            $products = Product::get()->all();
+            $produk = [];
+            foreach ($products as $product) {
+                $json = new Response([
+                    'id' => $product->id,
+                    'title' => $product->product_name,
+                    'description' => $product->description,
+                    'is_new' => $product->is_new,
+                    'category' => $product->category,
+                    'price' => $product->price,
+                ]);
+                array_push($produk, $json->original);
+            };
+            return new Response([
+                'status' => 'success',
+                'data' => $produk
+            ]);
+        } catch (\Throwable $th) {
+            return new Response([
+                'message' => 'Internal Server Error',
+                'error' => $th->getMessage()
+            ], 500);
+        } catch (\Exception $e) {
+            return new Response([
+                'message' => 'failed',
+                'error' => $e->getMessage()
+            ], 409);
+        }
     }
 
     public function categories() {
@@ -44,25 +73,9 @@ class ProductController extends Controller
         }
     }
 
-    public function search_product() {
+    public function search_product()
+    {
         return "Halaman Search Product";
-    }
-
-    public function get_product_detail($id) {
-        $product = Product::join('categories', 'products.category', '=', 'categories.id')
-            ->select('products.id as pid', 'product_name', 'description', 'price', 'category', 'category_name')
-            ->where('products.id', $id)
-            ->get()->first();
-        return response([
-            'id' => $product->pid,
-            'title' => $product->product_name,
-            'size' => ["S", "M", "L"],
-            'product_detail' => $product->description,
-            'price' => $product->price,
-            'images_url' => 'Not Found',
-            'category_id' => $product->category,
-            'category_name' =>$product->category_name
-        ]);
     }
 
     public function add_to_cart(Request $request) {
@@ -98,6 +111,44 @@ class ProductController extends Controller
             return response([
                 'message' => 'Error because '.$e->getMessage()
             ]);
+        }
+    }
+
+    public function get_product_detail($id)
+    {
+        // $route = Routes::find($request->input('route_id'));
+
+        // if ($route == null) {
+        //     return new Response([
+        //         'status' => 'failed',
+        //         'code' => 404,
+        //         'message' => 'Product not found',
+        //     ], 404);
+        // }
+        try {
+            $product = Product::find($id);
+            $json = new Response([
+                'id' => $product->id,
+                'title' => $product->product_name,
+                'description' => $product->description,
+                'is_new' => $product->is_new,
+                'category' => $product->category,
+                'price' => $product->price,
+            ]);
+            return new Response([
+                'status' => 'success',
+                'data' => $json->original
+            ]);
+        } catch (\Throwable $th) {
+            return new Response([
+                'message' => 'Internal Server Error',
+                'error' => $th->getMessage()
+            ], 500);
+        } catch (\Exception $e) {
+            return new Response([
+                'message' => 'failed',
+                'error' => $e->getMessage()
+            ], 409);
         }
     }
 }
