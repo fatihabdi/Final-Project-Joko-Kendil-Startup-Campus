@@ -35,33 +35,33 @@ The repository is structured as follows:
 
 ### Auth
 
--   [ ] Sign Up `/sign-up`
--   [ ] Sign In `/sign-in`
+-   [X] Sign Up `/sign-up`
+-   [X] Sign In `/sign-in`
 
 ### Product List
 
--   [ ] Get Product List `/products`
--   [ ] Get Category `/categories`
+-   [X] Get Product List `/products`
+-   [X] Get Category `/categories`
 -   [ ] Search Product bt Image `/products/search_image`
 
 ### Product Details
 
--   [ ] Get Product List `/products/{id}`
--   [ ] Add to Cart `/cart`
+-   [X] Get Product List `/products/{id}`
+-   [x] Add to Cart `/cart`
 
 ### Cart
 
 -   [ ] Get User Cart `/cart`
--   [ ] Get User Shipping Address `/user/shipping_address`
+-   [X] Get User Shipping Address `/user/shipping_address`
 -   [ ] Get Shipping Price `/shipping_price`
 -   [ ] Create Order `/order`
--   [ ] Delete Cart Item `/cart/cart_id`
+-   [X] Delete Cart Item `/cart/cart_id`
 
 ### User Profile
 
--   [ ] Get User Details `/user`
+-   [X] Get User Details `/user`
 -   [ ] Change Shipping Address `/user/shipping_address`
--   [ ] Top-up Balance `/user/balance`
+-   [X] Top-up Balance `/user/balance`
 -   [ ] Get User Balance `/user/balance`
 -   [ ] Get User Shipping Address `/user/shipping_address`
 -   [ ] User Orders `/order`
