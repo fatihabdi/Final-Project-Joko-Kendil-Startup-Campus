@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Cart;
+use App\Models\Order;
 use App\Models\ShippingAddress;
 use Illuminate\Support\Facades\Auth;
 
@@ -48,6 +49,42 @@ class CartController extends Controller
             'phone_number' => $address->phone_number,
             'address' => $address->address,
             'city' => $address->city
+        ]);
+    }
+
+    public function get_shipping_price(){
+        $cartprices = Order::where('users_id',Auth::user()->id)->get(['total']);
+        // dd($cartprices[0]->total);
+        $data = [];
+        $temp = [];
+        foreach($cartprices as $item){
+            if ($item->total >= 200) {
+                $regu = 0.2 * $item->total;
+            }
+            else{
+                $regu = 0.15 * $item->total;
+            }
+            if ($item->total >= 300){
+                $premi = 0.2 * $item->total;
+            }
+            else{
+                $premi = 0.25 * $item->total;
+            }
+            $json = response()->json([
+                'Name' => 'regular',
+                'price' => $regu, 
+            ]);
+            $json1 = response()->json([
+                'Name' => 'next day',
+                'price' => $premi,  
+            ]);
+            array_push($temp,$json->original);
+            array_push($temp,$json1->original);
+        }
+        // dd($json);
+        array_push($data,$temp);
+        return response()->json([
+            'data' => $data
         ]);
     }
 }

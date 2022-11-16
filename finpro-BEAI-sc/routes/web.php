@@ -85,3 +85,5 @@ Route::prefix('user')->group(function () {
     Route::get('/balance', [UserController::class, 'get_balance'])
         ->name('user.balance');
 });
+Route::get('/shipping_price', [CartController::class, 'get_shipping_price'])
+->name('get_shipping_price');
