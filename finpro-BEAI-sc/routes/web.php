@@ -28,15 +28,18 @@ Route::get('/image/{imagefile}',[HomeController::class,'get_image'])
     ->name('image.get_image');
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/orders', [AdminController::class, 'get_order'])
-        ->name('admin.order');
+    // Route::get('/admin/orders', [AdminController::class, 'get_order'])
+    //     ->name('admin.order');
     Route::post('/products', [AdminController::class, 'create_product'])
         ->name('admin.product');
     Route::post('/categories', [AdminController::class, 'create_category'])
         ->name('admin.category');
     Route::get('/sales', [AdminController::class, 'get_total_sales'])
         ->name('admin.sale');
-});
+});    
+
+Route::get('/admin/orders', [AdminController::class, 'get_order'])
+->name('admin.order');
 
 Route::get('/categories', [ProductController::class, 'categories'])
     ->name('categories');
