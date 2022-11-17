@@ -3,14 +3,44 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Order;
 
 class AdminController extends Controller
 {
-    public function get_order()
+    public function get_order(Request $request)
     {
-        return "Halaman Get Order";
+        if(Auth::user()->is_admin != 1){
+            return response()->json([
+                'message' => 'Forbidden',
+            ],403);
+        }
+        else{
+            if($request->sort_by == 'Prize a_z' ){
+                $order=Order::join('users', 'users_id', '=', 'users.id')->orderBy('total','desc')->paginate($request->page_size);
+            }
+            else{
+                $order=Order::join('users', 'users_id', '=', 'users.id')->orderBy('total','asc')->paginate($request->page_size);
+            }
+            // dd($order);
+            $data= [];
+            foreach ($order as $item) {
+                $json=response()->json([
+                    'id' => $item->id,
+                    'user_name' => $item->name,
+                    'created_at' => $item->created_at,
+                    'user_id' => $item->users_id,
+                    'user_email' => $item->email,
+                    'total' => $item->total,
+                ]);
+                array_push($data,$json->original);
+            }
+            return response()->json([
+                'data' => $data
+            ]);
+        }
     }
 
     public function create_product(Request $request)

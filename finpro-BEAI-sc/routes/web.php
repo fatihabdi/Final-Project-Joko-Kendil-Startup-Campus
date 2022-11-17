@@ -24,10 +24,12 @@ Route::post('/sign-up', [AuthController::class, 'register'])
     ->name('sign-up');
 Route::post('/sign-in', [AuthController::class, 'login'])
     ->name('sign-in');
+Route::get('/image/{imagefile}',[HomeController::class,'get_image'])
+    ->name('image.get_image');
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/orders', [AdminController::class, 'get_order'])
-        ->name('admin.order');
+    // Route::get('/admin/orders', [AdminController::class, 'get_order'])
+    //     ->name('admin.order');
     Route::post('/products', [AdminController::class, 'create_product'])
         ->name('admin.product');
     Route::put('/products/{id}', [AdminController::class, 'update_product'])
@@ -42,7 +44,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         ->name('admin.delete_category');
     Route::get('/sales', [AdminController::class, 'get_total_sales'])
         ->name('admin.sale');
-});
+});    
+
+Route::get('/admin/orders', [AdminController::class, 'get_order'])
+->name('admin.order');
 
 Route::get('/categories', [ProductController::class, 'categories'])
     ->name('categories');
