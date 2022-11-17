@@ -17,7 +17,7 @@ class CreateProducts extends Migration
             $table->id();
             $table->string('product_name');
             $table->text('description');
-            $table->boolean('is_new');
+            $table->string('condition');
             $table->integer('category');
             $table->integer('price');
             $table->timestamps();

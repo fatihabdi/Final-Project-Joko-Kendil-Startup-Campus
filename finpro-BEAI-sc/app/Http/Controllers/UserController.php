@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Balance;
+use App\Models\ShippingAddress;
 use Illuminate\Support\Facades\Auth;
 use Throwable;
 use Exception;
@@ -19,12 +20,32 @@ class UserController extends Controller
         ]);
     }
 
-    public function change_shipping_address() {
-        return "Halaman Change Shipping Address";
+    public function change_shipping_address(Request $request) {
+        $request->validate([
+            'name' => 'string',
+            'phone_number' => 'string|min:12',
+            'address' => 'string',
+            'city' => 'string'
+        ]);
+        $address = ShippingAddress::where('user_id', Auth::user()->id)->get()->first();
+        $address->name = $request->input('name') ? $request->input('name') : $address->name;
+        $address->phone_number = $request->input('phone_number') ? $request->input('phone_number') : $address->phone_number;
+        $address->address = $request->input('address') ? $request->input('address') : $address->address;
+        $address->city = $request->input('city') ? $request->input('city') : $address->city;
+        $address->save();
+        return response()->json([
+            'name' => $address->name,
+            'phone_number' => $address->phone_number,
+            'address' => $address->address,
+            'city' => $address->city
+        ]);
     }
 
     public function top_up(Request $request) {
         try {
+            $request->validate([
+                'amount' => 'required|integer'
+            ]);
             $balance = Balance::firstOrNew(['user_id' => Auth::user()->id]);
             $balance->balance += $request->input('amount');
             $balance->save();

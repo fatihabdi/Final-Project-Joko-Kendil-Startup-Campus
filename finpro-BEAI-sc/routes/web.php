@@ -30,8 +30,16 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         ->name('admin.order');
     Route::post('/products', [AdminController::class, 'create_product'])
         ->name('admin.product');
+    Route::put('/products/{id}', [AdminController::class, 'update_product'])
+        ->name('admin.update_product');
+    Route::delete('/products/{id}', [AdminController::class, 'delete_product'])
+        ->name('admin.delete_product');
     Route::post('/categories', [AdminController::class, 'create_category'])
         ->name('admin.category');
+    Route::put('/categories/{id}', [AdminController::class, 'update_category'])
+        ->name('admin.update_category');
+    Route::delete('/categories/{id}', [AdminController::class, 'delete_category'])
+        ->name('admin.delete_category');
     Route::get('/sales', [AdminController::class, 'get_total_sales'])
         ->name('admin.sale');
 });

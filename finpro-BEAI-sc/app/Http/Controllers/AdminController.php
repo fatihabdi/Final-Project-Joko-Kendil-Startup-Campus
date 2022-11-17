@@ -50,6 +50,43 @@ class AdminController extends Controller
         }
     }
 
+    public function update_product(Request $request, $id) {
+        try {
+            return $id;
+            // $request->validate([
+            //     'product_name' => 'required|string',
+            //     'description' => 'required|string',
+            //     'condition' => 'required|integer',
+            //     'category' => 'required|integer',
+            //     'price' => 'required|integer'
+            // ]);
+            // Product::where('id', $id)->update([
+            //     'product_name' => $request->input('product_name'),
+            //     'description' => $request->input('description'),
+            //     'is_new' => $request->input('condition'),
+            //     'category' => $request->input('category'),
+            //     'price' => $request->input('price')
+            // ]);
+            // return response()->json([
+            //     'message' => 'Product updated'
+            // ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $th->getMessage()
+            ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'failed',
+                'error' => $e->getMessage()
+            ], 409);
+        }
+    }
+
+    public function delete_product() {
+
+    }
+
     public function create_category(Request $request)
     {
         try {
@@ -78,6 +115,14 @@ class AdminController extends Controller
                 'error' => $e->getMessage()
             ], 409);
         }
+    }
+
+    public function update_category() {
+
+    }
+
+    public function delete_category() {
+
     }
 
     public function get_total_sales()
