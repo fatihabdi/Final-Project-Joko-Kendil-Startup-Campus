@@ -22,57 +22,6 @@ The repository is structured as follows:
 
 # Core API
 
-## Endpoint Progress
-
-### Universal
-
--   [ ] Get Image `/image/{image_name.ext}`
-
-### Home
-
--   [ ] Get Banner `/home/banner`
--   [ ] Get Category `/home/category`
-
-### Auth
-
--   [X] Sign Up `/sign-up`
--   [X] Sign In `/sign-in`
-
-### Product List
-
--   [X] Get Product List `/products`
--   [X] Get Category `/categories`
--   [ ] Search Product bt Image `/products/search_image`
-
-### Product Details
-
--   [X] Get Product List `/products/{id}`
--   [x] Add to Cart `/cart`
-
-### Cart
-
--   [ ] Get User Cart `/cart`
--   [X] Get User Shipping Address `/user/shipping_address`
--   [ ] Get Shipping Price `/shipping_price`
--   [ ] Create Order `/order`
--   [X] Delete Cart Item `/cart/cart_id`
-
-### User Profile
-
--   [X] Get User Details `/user`
--   [ ] Change Shipping Address `/user/shipping_address`
--   [X] Top-up Balance `/user/balance`
--   [ ] Get User Balance `/user/balance`
--   [ ] Get User Shipping Address `/user/shipping_address`
--   [ ] User Orders `/order`
-
-### Admin Dash [Admin-only]
-
--   [ ] Get Orders `/admin/orders`
--   [ ] Create Product `/products`
--   [ ] Create Category `/categories`
--   [ ] Get Total Sales `/sales`
-
 ## Universal
 
 | Method | URI                       | Note                     |
