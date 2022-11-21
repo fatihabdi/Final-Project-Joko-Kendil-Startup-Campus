@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Response;
+use App\Models\Category;
 use App\Models\Banner;
 
 class HomeController extends Controller

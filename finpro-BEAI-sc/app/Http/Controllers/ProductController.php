@@ -35,12 +35,12 @@ class ProductController extends Controller
                 'status' => 'success',
                 'data' => $produk
             ]);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return response()->json([
                 'message' => 'Internal Server Error',
                 'error' => $th->getMessage()
             ], 500);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'message' => 'failed',
                 'error' => $e->getMessage()
@@ -110,12 +110,12 @@ class ProductController extends Controller
                 'status' => 'success',
                 'data' => $json->original
             ]);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return response()->json([
                 'message' => 'Internal Server Error',
                 'error' => $th->getMessage()
             ], 500);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'message' => 'failed',
                 'error' => $e->getMessage()
