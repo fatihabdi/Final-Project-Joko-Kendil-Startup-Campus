@@ -45,7 +45,7 @@ Route::get('/categories', [ProductController::class, 'categories'])
     ->name('categories');
 Route::post('/order', [OrderController::class, 'create_order'])
     ->name('order.create');
-Route::get('/order', [OrderController::class, 'user_order'])
+Route::get('/user/order', [OrderController::class, 'user_order'])
     ->name('order.user');
 
 Route::prefix('home')->group(function () {
