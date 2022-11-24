@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Order;
+use Throwable;
+use Exception;
 
 class AdminController extends Controller
 {
@@ -49,30 +51,89 @@ class AdminController extends Controller
             $request->validate([
                 'product_name' => 'required|string|max:255',
                 'description' => 'required|string|max:255',
-                'is_new' => 'required',
-                'category' => 'required',
-                'price' => 'required'
+                'condition' => 'required|string',
+                'category' => 'required|integer',
+                'price' => 'required|integer'
             ]);
 
             $product = Product::create([
                 'product_name' => $request->product_name,
                 'description' => $request->description,
-                'is_new' => $request->is_new,
+                'condition' => $request->condition,
                 'category' => $request->category,
-                'price' => $request->price
+                'price' => $request->price,
+                'active' => 1
             ]);
             $product->save();
             return response()->json([
                 'status' => 'success',
-                'message' => 'Product created successfully',
-                'data' => $product
+                'message' => 'Product added'
             ]);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return response()->json([
                 'message' => 'Internal Server Error',
                 'error' => $th->getMessage()
             ], 500);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'failed',
+                'error' => $e->getMessage()
+            ], 409);
+        }
+    }
+
+    public function update_product(Request $request, $id) {
+        try {
+            $request->validate([
+                'product_name' => 'required|string',
+                'description' => 'required|string',
+                'condition' => 'required|string',
+                'category' => 'required|integer',
+                'price' => 'required|integer'
+            ]);
+            $category = Category::where('id', $request->input('category'))->get()->first();
+            if($category->active == 0) {
+                return response()->json([
+                    'message' => 'Category not found'
+                ]);
+            }
+            Product::where('id', $id)->update([
+                'product_name' => $request->input('product_name'),
+                'description' => $request->input('description'),
+                'condition' => $request->input('condition'),
+                'category' => $request->input('category'),
+                'price' => $request->input('price')
+            ]);
+            return response()->json([
+                'message' => 'Product updated'
+            ]);
+        } catch (Throwable $th) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $th->getMessage()
+            ], 500);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'failed',
+                'error' => $e->getMessage()
+            ], 409);
+        }
+    }
+
+    public function delete_product($id) {
+        try {
+            Product::where('id', $id)->update([
+                'active' => 0
+            ]);
+            return response()->json([
+                'message' => 'Product Deleted'
+            ]);
+        } catch (Throwable $th) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $th->getMessage()
+            ], 500);
+        } catch (Exception $e) {
             return response()->json([
                 'message' => 'failed',
                 'error' => $e->getMessage()
@@ -88,7 +149,8 @@ class AdminController extends Controller
             ]);
 
             $category = Category::create([
-                'category_name' => $request->category_name
+                'category_name' => $request->category_name,
+                'active' => 1
             ]);
             $category->save();
 
@@ -97,12 +159,57 @@ class AdminController extends Controller
                 'message' => 'Category created successfully',
                 'data' => $category
             ]);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return response()->json([
                 'message' => 'Internal Server Error',
                 'error' => $th->getMessage()
             ], 500);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'failed',
+                'error' => $e->getMessage()
+            ], 409);
+        }
+    }
+
+    public function update_category(Request $request, $id) {
+        try {
+            $request->validate([
+                'category_name' => 'required|string',
+            ]);
+            Category::where('id', $id)->update([
+                'category_name' => $request->input('category_name')
+            ]);
+            return response()->json([
+                'message' => 'Category updated'
+            ]);
+        } catch (Throwable $th) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $th->getMessage()
+            ], 500);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'failed',
+                'error' => $e->getMessage()
+            ], 409);
+        }
+    }
+
+    public function delete_category($id) {
+        try {
+            Category::where('id', $id)->update([
+                'active' => 0
+            ]);
+            return response()->json([
+                'message' => 'Category Deleted'
+            ]);
+        } catch (Throwable $th) {
+            return response()->json([
+                'message' => 'Internal Server Error',
+                'error' => $th->getMessage()
+            ], 500);
+        } catch (Exception $e) {
             return response()->json([
                 'message' => 'failed',
                 'error' => $e->getMessage()

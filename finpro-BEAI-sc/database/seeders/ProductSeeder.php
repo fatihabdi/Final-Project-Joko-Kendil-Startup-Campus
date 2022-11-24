@@ -18,14 +18,15 @@ class ProductSeeder extends Seeder
     {
         $faker = Faker::create('id_ID');
         for($i = 1; $i < 30; $i++) {
-            $new = $faker->randomElement([1, 0]);
             $cat = $faker->randomElement([1, 2, 3, 4, 5]);
+            $con = $faker->randomElement(["new", "used"]);
             Product::create([
                 'product_name' => $faker->name,
                 'description' => $faker->address,
-                'is_new' => $new,
+                'condition' => $con,
                 'category' => $cat,
-                'price' => $faker->numberBetween(1000, 10000)
+                'price' => $faker->numberBetween(1000, 10000),
+                'active' => 1
             ]);
         };
     }

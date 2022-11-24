@@ -8,13 +8,13 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Response;
+use App\Models\Category;
 use App\Models\Banner;
 
 class HomeController extends Controller
 {
     public function get_banner() {
         $banner=Banner::get();
-        // dd($data);
         $data=[];
         foreach($banner as $item){
             $json=response()->json([

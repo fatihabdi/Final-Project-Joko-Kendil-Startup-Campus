@@ -16,7 +16,8 @@ class CategorySeeder extends Seeder
     {
         for($i = 1; $i < 6; $i++) {
             Category::create([
-                'category_name' => "Categoty " . $i
+                'category_name' => "Category " . $i,
+                'active' => 1
             ]);
         };
     }
