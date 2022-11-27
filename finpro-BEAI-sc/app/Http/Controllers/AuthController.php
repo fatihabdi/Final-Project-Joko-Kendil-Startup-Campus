@@ -33,11 +33,12 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
+        $type = auth()->user()->role()->first()->role;
         $user_information = response()->json([
             'name' => $user->name,
             'email' => $user->email,
             'phone_number' => $user->phone_number,
-            'type' => "buyer"
+            'type' => $type
         ]);
         return response()->json([
                 'user_information' => $user_information->original,

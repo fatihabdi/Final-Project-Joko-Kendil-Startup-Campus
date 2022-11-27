@@ -64,6 +64,22 @@ class UserController extends Controller
     }
 
     public function get_balance() {
-        return "Halaman Balance";
+        try {
+            $balance = Balance::where('user_id', Auth::user()->id)->get()->first();
+            $data = response()->json([
+                'balance' => $balance->balance
+            ]);
+            return response()->json([
+                'data' => $data->original
+            ]);
+        } catch (Throwable $th) {
+            return response([
+                'message' => 'Failed because ' . $th->getMessage()
+            ]);
+        } catch (Exception $e) {
+            return response([
+                'message' => 'Error because ' . $e->getMessage()
+            ]);
+        }
     }
 }
