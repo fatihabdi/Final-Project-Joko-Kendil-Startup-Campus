@@ -45,7 +45,7 @@ Route::get('/categories', [ProductController::class, 'categories'])
     ->name('categories');
 Route::post('/order', [OrderController::class, 'create_order'])
     ->name('order.create');
-Route::get('/order', [OrderController::class, 'user_order'])
+Route::get('/user/order', [OrderController::class, 'user_order'])
     ->name('order.user');
 
 Route::prefix('home')->group(function () {
@@ -85,3 +85,5 @@ Route::prefix('user')->group(function () {
     Route::get('/balance', [UserController::class, 'get_balance'])
         ->name('user.balance');
 });
+Route::get('/shipping_price', [CartController::class, 'get_shipping_price'])
+->name('get_shipping_price');
