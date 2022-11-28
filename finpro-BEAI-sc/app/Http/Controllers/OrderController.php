@@ -6,11 +6,50 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
 use App\Models\Cart;
+use App\Models\Balance;
 
 class OrderController extends Controller
 {
-    public function create_order() {
-        return "Halaman Create Order";
+    public function create_order(Request $request) {
+        $order = Order::where('users_id', Auth::user()->id)->get()->first();
+        $balance = Balance::where('user_id', Auth::user()->id)->get()->first();
+        $shipping_price = 0;
+        if ($request->input('shipping_method') == "Regular" or $request->input('shipping_method') == "regular") {
+            if ($order->total < 200) {
+                $shipping_price = 0.15 * $order->total;
+            } else {
+                $shipping_price = 0.2 * $order->total;
+            }
+        } else if ($request->input('shipping_method') == "Same day" or $request->input('shipping_method') == "same day") {
+            if ($order->total < 300) {
+                $shipping_price = 0.2 * $order->total;
+            } else {
+                $shipping_price = 0.25 * $order->total;
+            }
+        } else {
+            return response()->json([
+                'message' => "Shipping method is not valid"
+            ]);
+        }
+        $total = $order->total + $shipping_price;
+
+        if ($balance->balance < $total) {
+            return response()->json([
+                'message' => "Balance lower than price"
+            ]);
+        }
+
+        $balance->balance -= $total;
+        $balance->save();
+        Cart::where('user_id', Auth::user()->id)->delete();
+        $order->status = "Complete";
+        $order->shipping_method = $request->input('shipping_method');
+        $order->shipping_price = $shipping_price;
+        $order->save();
+
+        return response()->json([
+            'message' => 'Order success'
+        ]);
     }
 
     public function user_order() {

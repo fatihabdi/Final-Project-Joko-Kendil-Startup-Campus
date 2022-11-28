@@ -219,6 +219,17 @@ class AdminController extends Controller
 
     public function get_total_sales()
     {
-        return "Halaman Get Total Sales";
+        $order = Order::where('status', 'complete')->get()->all();
+        $total = 0;
+        foreach ($order as $item) {
+            $total += $item->total;
+        }
+        $data = response()->json([
+            'total' => $total
+        ]);
+
+        return response()->json([
+            'data' => $data->original
+        ]);
     }
 }
