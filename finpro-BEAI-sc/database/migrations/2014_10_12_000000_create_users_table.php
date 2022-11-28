@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('email');
             $table->string('phone_number');
             $table->string('password');
-            $table->boolean('is_admin')->default(0);
+            $table->foreignId('role_id')->references('id')->on('roles')->default(2);
             $table->longText('token')->nullable();
             $table->timestamps();
         });

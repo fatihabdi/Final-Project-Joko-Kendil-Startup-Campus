@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
             'email' => 'admin@gmail.com',
             'phone_number' => '12463546256',
             'password' => Hash::make('password1234'),
-            'is_admin' => 1,
+            'role_id' => 1,
             'token' => 'lkjdfkajsdfjlasf'
         ]);
         $token = Auth::login($user);
@@ -31,7 +31,7 @@ class UserSeeder extends Seeder
             'email' => 'raihan@gmail.com',
             'phone_number' => '081380737126',
             'password' => Hash::make('password1234'),
-            'is_admin' => 0,
+            'role_id' => 2,
             'token' => 'lkjdfkajsdfjlasf'
         ]);
         $token = Auth::login($user);
