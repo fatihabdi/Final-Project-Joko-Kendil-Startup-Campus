@@ -63,9 +63,20 @@ class ProductController extends Controller
         ]);
     }
 
-    public function search_product()
+    public function search_product(Request $request)
     {
-        return "Halaman Search Product";
+        $imagefile = $request->image;
+        $categories = Category::get()->all();
+        $data = [];
+        foreach($categories as $category) {
+            $json = response()->json([
+                'id' => $category->id,
+            ]);
+            array_push($data, $json->original);
+        };
+        return new Response([
+            'data' => $data
+        ]);
     }
 
     public function add_to_cart(Request $request) {
