@@ -28,3 +28,6 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/categories/{id}', [AdminController::class, 'delete_category'])
         ->name('admin.delete_category');
 });
+
+Route::post('/sign-in', [AuthController::class, 'login'])
+    ->name('sign-in');
