@@ -13,7 +13,8 @@ class CartController extends Controller
     public function get_user_cart() {
         $cart = Cart::join('products', 'carts.product_id', '=', 'products.id')
             ->select('carts.id', 'quantity', 'size', 'price', 'product_name')
-            ->where('user_id', Auth::user()->id)->get()->all();
+            ->where('user_id', Auth::user()->id)
+            ->where('is_deleted', 0)->get()->all();
         $data = [];
         foreach ($cart as $item) {
             $detail = response()->json([
@@ -54,9 +55,7 @@ class CartController extends Controller
 
     public function get_shipping_price(){
         $cartprices = Order::where('users_id',Auth::user()->id)->get(['total']);
-        // dd($cartprices[0]->total);
         $data = [];
-        $temp = [];
         foreach($cartprices as $item){
             if ($item->total >= 200) {
                 $regu = 0.2 * $item->total;
@@ -65,10 +64,10 @@ class CartController extends Controller
                 $regu = 0.15 * $item->total;
             }
             if ($item->total >= 300){
-                $premi = 0.2 * $item->total;
+                $premi = 0.25 * $item->total;
             }
             else{
-                $premi = 0.25 * $item->total;
+                $premi = 0.2 * $item->total;
             }
             $json = response()->json([
                 'Name' => 'regular',
@@ -78,11 +77,9 @@ class CartController extends Controller
                 'Name' => 'next day',
                 'price' => $premi,  
             ]);
-            array_push($temp,$json->original);
-            array_push($temp,$json1->original);
+            array_push($data,$json->original);
+            array_push($data,$json1->original);
         }
-        // dd($json);
-        array_push($data,$temp);
         return response()->json([
             'data' => $data
         ]);

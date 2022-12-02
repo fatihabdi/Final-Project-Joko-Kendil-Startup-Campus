@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Models\Product;
 use App\Models\Cart;
 use App\Models\Category;
+use App\Models\Order;
+use App\Models\ShippingAddress;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -82,11 +84,32 @@ class ProductController extends Controller
     public function add_to_cart(Request $request) {
         try {
             $item = Cart::firstOrNew([
+                'user_id' => Auth::user()->id,
                 'product_id' => $request->input('id'),
-                'size' => $request->input('size')
+                'size' => $request->input('size'),
+                'is_deleted' => 0
             ]);
             $item->quantity += $request->input('quantity');
             $item->save();
+            
+            $address = ShippingAddress::where('user_id', Auth::user()->id)->get()->first();
+            $allItem = Cart::join('products', 'carts.product_id', '=', 'products.id')
+                ->select('products.price', 'quantity')
+                ->where('carts.is_deleted', 0)
+                ->get()->all();
+            $total = 0;
+            foreach($allItem as $item) {
+                $total += $item->price*$item->quantity;
+            }
+
+            $order = Order::firstOrNew([
+                'users_id' => Auth::user()->id
+            ]);
+            $order->shipping_address_id = $address->id;
+            $order->status = "Not Complete";
+            $order->total = $total;
+            $order->save();
+
             return response()->json([
                 'message' => 'Item added to cart'
             ]);

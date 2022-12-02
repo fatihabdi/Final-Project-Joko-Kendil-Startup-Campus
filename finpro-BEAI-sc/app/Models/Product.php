@@ -15,6 +15,7 @@ class Product extends Model
         'description',
         'is_new',
         'category',
-        'price'
+        'price',
+        'active'
     ];
 }
