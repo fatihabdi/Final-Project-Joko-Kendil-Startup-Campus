@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Balance;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
@@ -33,18 +34,17 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
-        $type = auth()->user()->role()->first()->role;
         $user_information = response()->json([
             'name' => $user->name,
             'email' => $user->email,
             'phone_number' => $user->phone_number,
-            'type' => $type
+            'type' => $user->role
         ]);
         return response()->json([
-                'user_information' => $user_information->original,
-                'token' => $token,
-                'message' => 'Login success'
-            ]);
+            'user_information' => $user_information->original,
+            'token' => $token,
+            'message' => 'Login success'
+        ], 200);
 
     }
 
@@ -64,9 +64,13 @@ class AuthController extends Controller
         ]);
         $token = Auth::login($user);
         User::where('id',$user->id)->update(['token' => $token]);
+        Balance::create([
+            'user_id' => Auth::user()->id,
+            'balance' => 0
+        ]);
         return response()->json([
             'message' => 'success, user created',
-        ]);
+        ], 200);
     }
 
     public function logout()

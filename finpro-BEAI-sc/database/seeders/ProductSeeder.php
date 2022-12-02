@@ -21,8 +21,8 @@ class ProductSeeder extends Seeder
             $cat = $faker->randomElement([1, 2, 3, 4, 5]);
             $con = $faker->randomElement(["new", "used"]);
             Product::create([
-                'product_name' => $faker->name,
-                'description' => $faker->address,
+                'product_name' => "Product " . $i,
+                'description' => "Lorem ipsum",
                 'condition' => $con,
                 'category' => $cat,
                 'price' => $faker->numberBetween(1000, 10000),
