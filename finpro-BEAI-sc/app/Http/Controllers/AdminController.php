@@ -14,7 +14,7 @@ class AdminController extends Controller
 {
     public function get_order(Request $request)
     {
-        if(Auth::user()->role_id != 1){
+        if(Auth::user()->role != "seller"){
             return response()->json([
                 'message' => 'Forbidden',
             ],403);

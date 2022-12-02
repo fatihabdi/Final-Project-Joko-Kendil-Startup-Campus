@@ -15,9 +15,9 @@ class Role
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next, $role_id)
+    public function handle(Request $request, Closure $next, $role)
     {
-        if (Auth::user() && Auth::user()->role_id == $role_id) {
+        if (Auth::user() && Auth::user()->role == $role) {
             return $next($request);
         }
         return response()->json([
