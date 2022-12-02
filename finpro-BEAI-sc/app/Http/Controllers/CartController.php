@@ -13,7 +13,8 @@ class CartController extends Controller
     public function get_user_cart() {
         $cart = Cart::join('products', 'carts.product_id', '=', 'products.id')
             ->select('carts.id', 'quantity', 'size', 'price', 'product_name')
-            ->where('user_id', Auth::user()->id)->get()->all();
+            ->where('user_id', Auth::user()->id)
+            ->where('is_deleted', 0)->get()->all();
         $data = [];
         foreach ($cart as $item) {
             $detail = response()->json([

@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
 use App\Models\Cart;
 use App\Models\Balance;
+use App\Models\ShippingAddress;
+use Carbon\Carbon;
 
 class OrderController extends Controller
 {
@@ -41,10 +43,13 @@ class OrderController extends Controller
 
         $balance->balance -= $total;
         $balance->save();
-        Cart::where('user_id', Auth::user()->id)->delete();
+        Cart::where('user_id', Auth::user()->id)->update([
+            'is_deleted' => 1
+        ]);
         $order->status = "Complete";
         $order->shipping_method = $request->input('shipping_method');
         $order->shipping_price = $shipping_price;
+        $order->created_at = Carbon::now();
         $order->save();
 
         return response()->json([
@@ -53,30 +58,46 @@ class OrderController extends Controller
     }
 
     public function user_order() {
-        $products = Cart::join('product_image','carts.product_id','=','product_image.product_id')->join('products','carts.product_id','=','products.id')->where('user_id',[Auth::user()->id])->get();
+        $products = Order::join('carts', 'orders.users_id', '=', 'carts.user_id')
+            ->join('products','carts.product_id', '=', 'products.id')
+            // ->join('product_image', 'carts.product_id', '=', 'product_image.product_id')
+            ->select('carts.id as cart_id', 'quantity', 'size', 'price', 'product_name')
+            ->where('orders.status', 'Complete')
+            ->where('carts.is_deleted', 1)
+            ->get()->all();
         $dataProduct=[];
         foreach ($products as $item){
-            $json=response()->json([
-                'id' => $item->product_id,
+            $json = response()->json([
+                'id' => $item->cart_id,
                 'details' => [
                     'quantity' => $item->quantity,
                     'size' => $item->size,
                 ],
                 'price' => $item->price * $item->quantity,
-                'image' => $item->image_file,
-                'name' => $item->image_title,
-        ]);
+                // 'image' => $item->image_file,
+                'name' => $item->product_name,
+            ]);
             array_push($dataProduct,$json->original);
         }
-        $orders = Order::join('shipping_address', 'shipping_address_id' , '=', 'shipping_address.id')->where('users_id',[Auth::user()->id])->where('status','1')->get();        $data=[];
+        $orders = Order::where('users_id',[Auth::user()->id])
+            ->where('status','Complete')
+            ->get();
+        $data=[];
+        $shipping_address = ShippingAddress::where('user_id', Auth::user()->id)->get()->first();
+        $address = response()->json([
+            "name" => $shipping_address->name,
+            "phone_number" => $shipping_address->phone_number,
+            "address" => $shipping_address->address,
+            "city" => $shipping_address->city
+        ]);
         foreach ($orders as $item) {
-            $json=response()->json([
+            $json = response()->json([
                 'id' => $item->id,
                 'created_at' => $item->created_at,
                 'products' => [$dataProduct],
                 'shipping_method' => $item->shipping_method,
-                'shipping_address' => $item->address,
-        ]);
+                'shipping_address' => $address->original
+            ]);
             array_push($data,$json->original);
         }
         return response()->json([

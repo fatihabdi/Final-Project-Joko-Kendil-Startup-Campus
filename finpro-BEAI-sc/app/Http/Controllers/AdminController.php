@@ -14,13 +14,13 @@ class AdminController extends Controller
 {
     public function get_order(Request $request)
     {
-        if(Auth::user()->is_admin != 1){
+        if(Auth::user()->role_id != 1){
             return response()->json([
                 'message' => 'Forbidden',
             ],403);
         }
         else{
-            if($request->sort_by == 'Prize a_z' ){
+            if($request->sort_by == 'Price a_z' ){
                 $order=Order::join('users', 'users_id', '=', 'users.id')->orderBy('total','desc')->paginate($request->page_size);
             }
             else{
@@ -219,7 +219,7 @@ class AdminController extends Controller
 
     public function get_total_sales()
     {
-        $order = Order::where('status', 'complete')->get()->all();
+        $order = Order::where('status', 'Complete')->get()->all();
         $total = 0;
         foreach ($order as $item) {
             $total += $item->total;

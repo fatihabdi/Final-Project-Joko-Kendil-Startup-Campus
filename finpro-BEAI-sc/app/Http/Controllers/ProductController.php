@@ -75,7 +75,8 @@ class ProductController extends Controller
             $item = Cart::firstOrNew([
                 'user_id' => Auth::user()->id,
                 'product_id' => $request->input('id'),
-                'size' => $request->input('size')
+                'size' => $request->input('size'),
+                'is_deleted' => 0
             ]);
             $item->quantity += $request->input('quantity');
             $item->save();
@@ -83,6 +84,7 @@ class ProductController extends Controller
             $address = ShippingAddress::where('user_id', Auth::user()->id)->get()->first();
             $allItem = Cart::join('products', 'carts.product_id', '=', 'products.id')
                 ->select('products.price', 'quantity')
+                ->where('carts.is_deleted', 0)
                 ->get()->all();
             $total = 0;
             foreach($allItem as $item) {
