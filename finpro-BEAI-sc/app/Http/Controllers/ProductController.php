@@ -103,10 +103,10 @@ class ProductController extends Controller
             }
 
             $order = Order::firstOrNew([
-                'users_id' => Auth::user()->id
+                'users_id' => Auth::user()->id,
+                'status' => 'Not Complete'
             ]);
             $order->shipping_address_id = $address->id;
-            $order->status = "Not Complete";
             $order->total = $total;
             $order->save();
 

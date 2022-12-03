@@ -54,7 +54,7 @@ class CartController extends Controller
     }
 
     public function get_shipping_price(){
-        $cartprices = Order::where('users_id',Auth::user()->id)->get(['total']);
+        $cartprices = Order::where('users_id',Auth::user()->id)->where('status', 'Not Complete')->get(['total']);
         $data = [];
         foreach($cartprices as $item){
             if ($item->total >= 200) {
@@ -71,11 +71,11 @@ class CartController extends Controller
             }
             $json = response()->json([
                 'Name' => 'regular',
-                'price' => $regu, 
+                'price' => round($regu, 2), 
             ]);
             $json1 = response()->json([
                 'Name' => 'next day',
-                'price' => $premi,  
+                'price' => round($premi, 2),  
             ]);
             array_push($data,$json->original);
             array_push($data,$json1->original);
