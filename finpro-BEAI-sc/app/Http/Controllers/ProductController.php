@@ -17,22 +17,22 @@ use Exception;
 
 class ProductController extends Controller
 {
-    public function get_product_list()
+    public function get_product_list(Request $request)
     {
         try {
-            $products = Product::get()->all();
+            $cats = explode(',', $request->category);
             $produk = [];
-            foreach ($products as $product) {
-                $json = response()->json([
-                    'id' => $product->id,
-                    'title' => $product->product_name,
-                    'description' => $product->description,
-                    'is_new' => $product->is_new,
-                    'category' => $product->category,
-                    'price' => $product->price,
-                ]);
-                array_push($produk, $json->original);
-            };
+            foreach ($cats as $param) {
+                $products = Product::where('category', $param)->get()->all();
+                foreach ($products as $product) {
+                    $json = response()->json([
+                        'id' => $product->id,
+                        'title' => $product->product_name,
+                        'price' => $product->price,
+                    ]);
+                    array_push($produk, $json->original);
+                };
+            }
             return response()->json([
                 'status' => 'success',
                 'data' => $produk
