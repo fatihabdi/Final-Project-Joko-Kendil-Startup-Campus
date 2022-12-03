@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,7 +19,7 @@ use App\Http\Controllers\AdminController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'role:seller'])->group(function () {
     Route::put('/products/{id}', [AdminController::class, 'update_product'])
         ->name('admin.update_product');
     Route::delete('/products/{id}', [AdminController::class, 'delete_product'])
@@ -29,5 +30,5 @@ Route::middleware(['auth'])->group(function () {
         ->name('admin.delete_category');
 });
 
-Route::post('/sign-in', [AuthController::class, 'login'])
-    ->name('sign-in');
+// Route::post('/sign-in', [AuthController::class, 'login'])
+//     ->name('sign-in');

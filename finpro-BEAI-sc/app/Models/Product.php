@@ -13,7 +13,7 @@ class Product extends Model
         'id',
         'product_name',
         'description',
-        'is_new',
+        'condition',
         'category',
         'price',
         'active'

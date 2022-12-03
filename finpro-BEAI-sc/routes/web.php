@@ -76,7 +76,7 @@ Route::middleware('auth')->group(function () {
             ->name('order.user');
     });
     
-    Route::middleware('role:1')->group(function () {
+    Route::middleware('role:seller')->group(function () {
         Route::get('/orders', [AdminController::class, 'get_order'])
             ->name('admin.order');
         Route::post('/products', [AdminController::class, 'create_product'])
