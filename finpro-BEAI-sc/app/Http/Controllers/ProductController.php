@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Response;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\ShippingAddress;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Throwable;
 use Exception;
@@ -20,19 +21,35 @@ class ProductController extends Controller
     public function get_product_list(Request $request)
     {
         try {
-            $cats = explode(',', $request->category);
-            $produk = [];
-            foreach ($cats as $param) {
-                $products = Product::where('category', $param)->get()->all();
-                foreach ($products as $product) {
-                    $json = response()->json([
-                        'id' => $product->id,
-                        'title' => $product->product_name,
-                        'price' => $product->price,
-                    ]);
-                    array_push($produk, $json->original);
-                };
+            $query = explode('&', $request->server->get('QUERY_STRING'));
+            $params = [];
+            if ($query[0] != "") {
+                foreach ($query as $param) {
+                    if (strpos($param, '=') === false) $param += '=';
+                    list($name, $value) = explode('=', $param,2);
+                    $expValue = explode(',', $value);
+                    foreach ($expValue as $value) {
+                        $params[urldecode($name)][] = urldecode($value);
+                    }
+                }
             }
+            $produk = [];
+            $products = Product::join('product_image', 'products.id', '=', 'product_image.product_id')
+                ->select('products.id', 'product_name', 'price', 'category', 'condition', 'image_file', 'image_title')
+                ->where('products.active', 1)
+                ->get()->all();
+            foreach ($products as $product) {
+                $json = response()->json([
+                    'id' => $product->id,
+                    'title' => $product->product_name,
+                    'price' => $product->price,
+                    'category' => $product->category,
+                    'condition' => $product->condition,
+                    'image' => Storage::url($product->image_title)
+                ]);
+                array_push($produk, $json->original);
+            }
+
             return response()->json([
                 'status' => 'success',
                 'data' => $produk
@@ -128,7 +145,8 @@ class ProductController extends Controller
     {
         try {
             $product = Product::join('categories', 'products.category', '=', 'categories.id')
-                ->select('products.id', 'product_name', 'description', 'price', 'category', 'category_name')
+                ->join('product_image', 'products.id', '=', 'product_image.product_id')
+                ->select('products.id', 'product_name', 'description', 'price', 'category', 'category_name', 'image_title')
                 ->where('products.id', $id)->get()->first();
             $json = response()->json([
                 'id' => $product->id,
@@ -136,7 +154,7 @@ class ProductController extends Controller
                 'size' => ['S', 'M', 'L'],
                 'product_detail' => $product->description,
                 'price' => $product->price,
-                'images_url' => "Not found",
+                'image_url' => Storage::url($product->image_title),
                 'category_id' => $product->category,
                 'category_name' => $product->category_name
             ]);
