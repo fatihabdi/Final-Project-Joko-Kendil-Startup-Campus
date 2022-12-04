@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Order;
+use App\Models\ProductImages;
 use App\Models\ShippingAddress;
 use Carbon\Carbon;
 use Throwable;
@@ -34,18 +35,19 @@ class ProductController extends Controller
                 }
             }
             $produk = [];
-            $products = Product::join('product_image', 'products.id', '=', 'product_image.product_id')
-                ->select('products.id', 'product_name', 'price', 'category', 'condition', 'image_file', 'image_title')
+            $products = Product::select('products.id', 'product_name', 'price', 'category', 'condition')
                 ->where('products.active', 1)
                 ->get()->all();
             foreach ($products as $product) {
+                $image = ProductImages::join('products', 'product_image.product_id', '=', 'products.id')
+                    ->where('products.id', $product->id)->get()->first();
                 $json = response()->json([
                     'id' => $product->id,
                     'title' => $product->product_name,
                     'price' => $product->price,
                     'category' => $product->category,
                     'condition' => $product->condition,
-                    'image' => Storage::url($product->image_title)
+                    'image' => Storage::url($image->image_title)
                 ]);
                 array_push($produk, $json->original);
             }
@@ -68,7 +70,7 @@ class ProductController extends Controller
     }
 
     public function categories() {
-        $categories = Category::get()->all();
+        $categories = Category::where('active', 1)->get()->all();
         $data = [];
         foreach($categories as $category) {
             $json = response()->json([
@@ -145,16 +147,23 @@ class ProductController extends Controller
     {
         try {
             $product = Product::join('categories', 'products.category', '=', 'categories.id')
-                ->join('product_image', 'products.id', '=', 'product_image.product_id')
-                ->select('products.id', 'product_name', 'description', 'price', 'category', 'category_name', 'image_title')
+                ->select('products.id', 'product_name', 'description', 'price', 'category', 'category_name')
                 ->where('products.id', $id)->get()->first();
+            $images = ProductImages::join('products', 'product_image.product_id', '=', 'products.id')
+                ->select('image_title')
+                ->where('product_id', $product->id)
+                ->get()->all();
+            $imageUrl = [];
+            foreach ($images as $image) {
+                array_push($imageUrl, Storage::url($image->image_title));
+            }
             $json = response()->json([
                 'id' => $product->id,
                 'title' => $product->product_name,
                 'size' => ['S', 'M', 'L'],
                 'product_detail' => $product->description,
                 'price' => $product->price,
-                'image_url' => Storage::url($product->image_title),
+                'images_url' => $imageUrl,
                 'category_id' => $product->category,
                 'category_name' => $product->category_name
             ]);

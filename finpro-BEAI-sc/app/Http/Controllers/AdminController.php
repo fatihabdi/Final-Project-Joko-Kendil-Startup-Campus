@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImages;
@@ -69,7 +70,7 @@ class AdminController extends Controller
                 $image = str_replace('data:image/png;base64,', '', $image);
                 $image = str_replace('data:image/webp;base64,', '', $image);
                 $image = str_replace(' ', '+', $image);
-                $imageName = time()."image.png";
+                $imageName = time().Str::random(3)."image.png";
                 $path = \File::put(storage_path().'/app/public/'.$imageName, base64_decode($image));
 
                 ProductImages::create([
