@@ -36,9 +36,37 @@ class ProductController extends Controller
             }
             $produk = [];
             $products = Product::select('products.id', 'product_name', 'price', 'category', 'condition')
-                ->where('products.active', 1)
-                ->get()->all();
-            foreach ($products as $product) {
+                ->where('products.active', 1);
+            if (isset($params['category'])) {
+                $products->where(function ($que) use ($params) {
+                    $que->where('category', $params['category'][0]);
+                    for ($i = 1; $i < count($params['category']); $i++) {
+                        $que->orWhere('category', $params['category'][$i]);
+                    }
+                });
+            }
+            if (isset($params['condition'])) {
+                $products->where(function ($que) use ($params) {
+                    $que->where('condition', $params['condition'][0]);
+                    for ($i = 1; $i < count($params['condition']); $i++) {
+                        $que->orWhere('condition', $params['condition'][$i]);
+                    }
+                });
+            }
+            if (isset($params['price'])) {
+                $products->where('price', '>=', $params['price'][0])->where('price', '<=', $params['price'][1]);
+            }
+            if (isset($params['sort_by'])) {
+                if ($params['sort_by'][0] == "Price a_z") {
+                    $products->orderBy('price', 'ASC');
+                } else {
+                    $products->orderBy('price', 'DESC');
+                }
+            }
+            $product = $products->paginate($request->page_size);
+            $totalRow = $product->total();
+            
+            foreach ($product->items() as $product) {
                 $image = ProductImages::join('products', 'product_image.product_id', '=', 'products.id')
                     ->where('products.id', $product->id)->get()->first();
                 $json = response()->json([
@@ -51,10 +79,10 @@ class ProductController extends Controller
                 ]);
                 array_push($produk, $json->original);
             }
-
             return response()->json([
                 'status' => 'success',
-                'data' => $produk
+                'data' => $produk,
+                'total_rows' => $totalRow
             ]);
         } catch (Throwable $th) {
             return response()->json([
