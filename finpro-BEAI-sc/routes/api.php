@@ -20,7 +20,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::middleware(['auth', 'role:seller'])->group(function () {
-    Route::put('/products/{id}', [AdminController::class, 'update_product'])
+    Route::put('/products', [AdminController::class, 'update_product'])
         ->name('admin.update_product');
     Route::delete('/products/{id}', [AdminController::class, 'delete_product'])
         ->name('admin.delete_product');
