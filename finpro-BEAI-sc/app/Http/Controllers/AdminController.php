@@ -51,12 +51,6 @@ class AdminController extends Controller
     public function create_product(Request $request)
     {
         try {
-            $base64_image = $request->images[0];
-            $image = str_replace('data:image/jpeg;base64,', '', $base64_image);
-            $image = str_replace(' ', '+', $image);
-            $imageName = time()."image.png";
-            $path = \File::put(storage_path().'/app/public/'.$imageName, base64_decode($image));
-
             $product = Product::insertGetId([
                 'product_name' => $request->product_name,
                 'description' => $request->description,
@@ -68,11 +62,23 @@ class AdminController extends Controller
                 'updated_at' => Carbon::now(),
             ]);
 
-            ProductImages::create([
-                'product_id' => $product,
-                'image_title' => $imageName,
-                'image_file' => $path
-            ]);
+            $base64_image = $request->images;
+            foreach ($base64_image as $b64_image) {
+                $image = str_replace('data:image/jpeg;base64,', '', $b64_image);
+                $image = str_replace('data:image/jpg;base64,', '', $image);
+                $image = str_replace('data:image/png;base64,', '', $image);
+                $image = str_replace('data:image/webp;base64,', '', $image);
+                $image = str_replace(' ', '+', $image);
+                $imageName = time()."image.png";
+                $path = \File::put(storage_path().'/app/public/'.$imageName, base64_decode($image));
+
+                ProductImages::create([
+                    'product_id' => $product,
+                    'image_title' => $imageName,
+                    'image_file' => $path
+                ]);
+            }
+
 
             return response()->json([
                 'status' => 'success',
