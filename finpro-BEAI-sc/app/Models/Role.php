@@ -5,17 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class Role extends Model
 {
     use HasFactory;
-    protected $table = 'products';
+    protected $table = 'roles';
     protected $fillable = [
         'id',
-        'product_name',
-        'description',
-        'condition',
-        'category',
-        'price',
-        'active'
+        'role',
     ];
+
+    public function user() {
+        return $this->hasMany('App\Models\User');
+    }
 }

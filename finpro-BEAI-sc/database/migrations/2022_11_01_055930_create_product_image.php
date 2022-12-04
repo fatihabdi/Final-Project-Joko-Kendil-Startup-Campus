@@ -17,7 +17,7 @@ class CreateProductImage extends Migration
             $table->id();
             $table->foreignId("product_id")->references("id")->on("products");
             $table->string("image_title");
-            $table->string('image_file');
+            $table->string('image_file')->nullable();
             $table->timestamps();
         });
     }

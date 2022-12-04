@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductImages;
 use App\Models\Order;
+use Carbon\Carbon;
 use Throwable;
 use Exception;
 
@@ -14,13 +17,13 @@ class AdminController extends Controller
 {
     public function get_order(Request $request)
     {
-        if(Auth::user()->is_admin != 1){
+        if(Auth::user()->role != "seller"){
             return response()->json([
                 'message' => 'Forbidden',
             ],403);
         }
         else{
-            if($request->sort_by == 'Prize a_z' ){
+            if($request->sort_by == 'Price a_z' ){
                 $order=Order::join('users', 'users_id', '=', 'users.id')->orderBy('total','desc')->paginate($request->page_size);
             }
             else{
@@ -48,23 +51,35 @@ class AdminController extends Controller
     public function create_product(Request $request)
     {
         try {
-            $request->validate([
-                'product_name' => 'required|string|max:255',
-                'description' => 'required|string|max:255',
-                'condition' => 'required|string',
-                'category' => 'required|integer',
-                'price' => 'required|integer'
-            ]);
-
-            $product = Product::create([
+            $product = Product::insertGetId([
                 'product_name' => $request->product_name,
                 'description' => $request->description,
                 'condition' => $request->condition,
                 'category' => $request->category,
                 'price' => $request->price,
-                'active' => 1
+                'active' => 1,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ]);
-            $product->save();
+
+            $base64_image = $request->images;
+            foreach ($base64_image as $b64_image) {
+                $image = str_replace('data:image/jpeg;base64,', '', $b64_image);
+                $image = str_replace('data:image/jpg;base64,', '', $image);
+                $image = str_replace('data:image/png;base64,', '', $image);
+                $image = str_replace('data:image/webp;base64,', '', $image);
+                $image = str_replace(' ', '+', $image);
+                $imageName = time()."image.png";
+                $path = \File::put(storage_path().'/app/public/'.$imageName, base64_decode($image));
+
+                ProductImages::create([
+                    'product_id' => $product,
+                    'image_title' => $imageName,
+                    'image_file' => $path
+                ]);
+            }
+
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Product added'
@@ -97,6 +112,9 @@ class AdminController extends Controller
                     'message' => 'Category not found'
                 ]);
             }
+
+            $path = Storage::disk('public')->putFile('photos', $request->file('images'));
+
             Product::where('id', $id)->update([
                 'product_name' => $request->input('product_name'),
                 'description' => $request->input('description'),
@@ -104,6 +122,9 @@ class AdminController extends Controller
                 'category' => $request->input('category'),
                 'price' => $request->input('price')
             ]);
+
+
+
             return response()->json([
                 'message' => 'Product updated'
             ]);
@@ -219,6 +240,17 @@ class AdminController extends Controller
 
     public function get_total_sales()
     {
-        return "Halaman Get Total Sales";
+        $order = Order::where('status', 'Complete')->get()->all();
+        $total = 0;
+        foreach ($order as $item) {
+            $total += $item->total;
+        }
+        $data = response()->json([
+            'total' => $total
+        ]);
+
+        return response()->json([
+            'data' => $data->original
+        ]);
     }
 }

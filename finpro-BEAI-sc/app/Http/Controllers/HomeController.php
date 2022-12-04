@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Response;
+// use Illuminate\Support\Facades\Response;
 use App\Models\Category;
 use App\Models\Banner;
 
@@ -32,25 +32,26 @@ class HomeController extends Controller
     public function get_category()
     {
         try {
-            $categories = Category::get()->all();
+            $categories = Category::get();
             $data = [];
-            foreach ($categories as $category) {
-                $json = new Response([
-                    'id' => $category->id,
-                    'title' => $category->category_name
+            // dd($categories[0]);
+            foreach ($categories as $item) {
+                $json = response()->json([
+                    'id' => $item->id,
+                    'title' => $item->category_name,
                 ]);
                 array_push($data, $json->original);
             };
-            return new Response([
+            return response()->json([
                 'data' => $data
             ]);
         } catch (\Throwable $th) {
-            return new Response([
+            return response()->json([
                 'message' => 'Internal Server Error',
                 'error' => $th->getMessage()
             ], 500);
         } catch (\Exception $e) {
-            return new Response([
+            return response()->json([
                 'message' => 'failed',
                 'error' => $e->getMessage()
             ], 409);

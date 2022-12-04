@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class Role
 {
@@ -16,10 +17,11 @@ class Role
      */
     public function handle(Request $request, Closure $next, $role)
     {
-        if ($request->user()->role == $role) {
+        if (Auth::user() && Auth::user()->role == $role) {
             return $next($request);
         }
-        abort(404, "I'm Sorry");
-        // return redirect()->to(route('sign-in'));
+        return response()->json([
+            "message" => "Error because you aren't admin!"
+        ]);
     }
 }
