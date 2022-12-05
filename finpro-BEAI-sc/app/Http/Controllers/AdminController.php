@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImages;
@@ -69,7 +70,7 @@ class AdminController extends Controller
                 $image = str_replace('data:image/png;base64,', '', $image);
                 $image = str_replace('data:image/webp;base64,', '', $image);
                 $image = str_replace(' ', '+', $image);
-                $imageName = time()."image.png";
+                $imageName = time().Str::random(3)."image.png";
                 $path = \File::put(storage_path().'/app/public/'.$imageName, base64_decode($image));
 
                 ProductImages::create([
@@ -97,15 +98,8 @@ class AdminController extends Controller
         }
     }
 
-    public function update_product(Request $request, $id) {
+    public function update_product(Request $request) {
         try {
-            $request->validate([
-                'product_name' => 'required|string',
-                'description' => 'required|string',
-                'condition' => 'required|string',
-                'category' => 'required|integer',
-                'price' => 'required|integer'
-            ]);
             $category = Category::where('id', $request->input('category'))->get()->first();
             if($category->active == 0) {
                 return response()->json([
@@ -113,17 +107,33 @@ class AdminController extends Controller
                 ]);
             }
 
-            $path = Storage::disk('public')->putFile('photos', $request->file('images'));
-
-            Product::where('id', $id)->update([
-                'product_name' => $request->input('product_name'),
-                'description' => $request->input('description'),
-                'condition' => $request->input('condition'),
-                'category' => $request->input('category'),
-                'price' => $request->input('price')
+            Product::where('id', $request->product_id)->update([
+                'product_name' => $request->product_name,
+                'description' => $request->description,
+                'condition' => $request->condition,
+                'category' => $request->category,
+                'price' => $request->price
             ]);
 
-
+            $base64_image = $request->images;
+            $con = 1;
+            foreach ($base64_image as $b64_image) {
+                $image = str_replace('data:image/jpeg;base64,', '', $b64_image);
+                $image = str_replace('data:image/jpg;base64,', '', $image);
+                $image = str_replace('data:image/png;base64,', '', $image);
+                $image = str_replace('data:image/webp;base64,', '', $image);
+                $image = str_replace(' ', '+', $image);
+                $imageName = time() . Str::random(3) . "image.png";
+                $path = \File::put(storage_path() . '/app/public/' . $imageName, base64_decode($image));
+                if($path != 22) {
+                    $img = ProductImages::firstOrNew([
+                        'product_id' => $request->product_id,
+                        'image_file' => $path
+                    ]);
+                    $img->image_title = $imageName;
+                    $img->save();
+                }
+            }
 
             return response()->json([
                 'message' => 'Product updated'

@@ -3,29 +3,32 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\ShippingAddress;
-use Illuminate\Support\Facades\Auth;
+use App\Models\ProductImages;
 
 class CartController extends Controller
 {
     public function get_user_cart() {
         $cart = Cart::join('products', 'carts.product_id', '=', 'products.id')
-            ->select('carts.id', 'quantity', 'size', 'price', 'product_name')
+            ->select('carts.id as cart_id', 'products.id as product_id', 'quantity', 'size', 'price', 'product_name')
             ->where('user_id', Auth::user()->id)
             ->where('is_deleted', 0)->get()->all();
         $data = [];
         foreach ($cart as $item) {
+            $img = ProductImages::where('product_id', $item->product_id)->get()->first();
             $detail = response()->json([
                 'quantity' => $item->quantity,
                 'size' => $item->size
             ]);
             $json = response()->json([
-                'id' => $item->id,
+                'id' => $item->cart_id,
                 'details' => $detail->original,
                 'price' => $item->price,
-                'image' => "Not found",
+                'image' => Storage::url($img->image_title),
                 'name' => $item->product_name
             ]);
             array_push($data, $json->original);
@@ -36,7 +39,16 @@ class CartController extends Controller
     }
 
     public function delete_cart_item($id) {
-        Cart::where('product_id',$id)->where('user_id', Auth::user()->id)->update(['is_deleted'=>1]);
+        Cart::where('id',$id)->where('user_id', Auth::user()->id)->update(['is_deleted'=>1]);
+        $allItem = Cart::join('products', 'carts.product_id', '=', 'products.id')
+            ->select('products.price', 'quantity')
+            ->where('carts.is_deleted', 0)
+            ->get()->all();
+        $total = 0;
+        foreach ($allItem as $item) {
+            $total += $item->price * $item->quantity;
+        }
+        Order::where('users_id', Auth::user()->id)->where('status', 'Not Complete')->update(['total' => $total]);
         return response()->json([
             'message' => 'Cart Deleted'
         ]);

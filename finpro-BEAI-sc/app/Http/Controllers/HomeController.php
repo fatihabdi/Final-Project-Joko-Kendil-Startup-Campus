@@ -32,7 +32,7 @@ class HomeController extends Controller
     public function get_category()
     {
         try {
-            $categories = Category::get();
+            $categories = Category::where('active', 1)->get();
             $data = [];
             // dd($categories[0]);
             foreach ($categories as $item) {
