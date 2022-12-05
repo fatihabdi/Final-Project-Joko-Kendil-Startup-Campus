@@ -41,11 +41,18 @@ class HomeController extends Controller
                     ->select('image_title')
                     ->where('categories.id', $item->id)
                     ->get()->first();
-                $json = response()->json([
-                    'id' => $item->id,
-                    'title' => $item->category_name,
-                    'image' => Storage::url($img->image_title)
-                ]);
+                if (isset($img)) {
+                    $json = response()->json([
+                        'id' => $item->id,
+                        'title' => $item->category_name,
+                        'image' => Storage::url($img->image_title)
+                    ]);
+                } else {
+                    $json = response()->json([
+                        'id' => $item->id,
+                        'title' => $item->category_name
+                    ]);
+                }
                 array_push($data, $json->original);
             };
             return response()->json([
