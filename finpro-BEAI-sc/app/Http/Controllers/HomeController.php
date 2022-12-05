@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 // use Illuminate\Support\Facades\Response;
 use App\Models\Category;
 use App\Models\Banner;
+use App\Models\ProductImages;
 
 class HomeController extends Controller
 {
@@ -34,11 +35,16 @@ class HomeController extends Controller
         try {
             $categories = Category::where('active', 1)->get();
             $data = [];
-            // dd($categories[0]);
             foreach ($categories as $item) {
+                $img = ProductImages::join('products', 'product_image.product_id', '=', 'products.id')
+                    ->join('categories', 'products.category', '=', 'categories.id')
+                    ->select('image_title')
+                    ->where('categories.id', $item->id)
+                    ->get()->first();
                 $json = response()->json([
                     'id' => $item->id,
                     'title' => $item->category_name,
+                    'image' => Storage::url($img->image_title)
                 ]);
                 array_push($data, $json->original);
             };
