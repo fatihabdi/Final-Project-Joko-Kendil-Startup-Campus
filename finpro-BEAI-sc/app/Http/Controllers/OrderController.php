@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Order;
 use App\Models\Cart;
 use App\Models\Balance;
 use App\Models\ShippingAddress;
 use App\Models\ProductOrder;
+use App\Models\ProductImages;
 use Carbon\Carbon;
 
 class OrderController extends Controller
@@ -72,28 +74,25 @@ class OrderController extends Controller
         $orders = Order::where('users_id', Auth::user()->id)
             ->where('orders.status', 'Complete')
             ->get()->all();
-        // $orders = Order::where('users_id', [Auth::user()->id])
-        //     ->where('status', 'Complete')
-        //     ->get();
         $data=[];
         foreach ($orders as $order) {
             $dataProduct=[];
             $products = Order::join('product_order', 'orders.id', '=', 'product_order.order_id')
                 ->join('carts', 'product_order.cart_id', '=', 'carts.id')
                 ->join('products','carts.product_id', '=', 'products.id')
-                // ->join('product_image', 'carts.product_id', '=', 'product_image.product_id')
-                ->select('carts.id as cart_id', 'quantity', 'size', 'price', 'product_name')
+                ->select('products.id as product_id', 'quantity', 'size', 'price', 'product_name')
                 ->where('orders.id', $order->id)
                 ->get()->all();
                 foreach ($products as $item){
+                    $img = ProductImages::where('product_id', $item->product_id)->get()->first();
                     $json = response()->json([
-                        'id' => $item->cart_id,
+                        'id' => $item->product_id,
                         'details' => [
                             'quantity' => $item->quantity,
                             'size' => $item->size,
                         ],
                         'price' => $item->price * $item->quantity,
-                        // 'image' => $item->image_file,
+                        'image' => Storage::url($img->image_title),
                     'name' => $item->product_name,
                 ]);
                 array_push($dataProduct,$json->original);

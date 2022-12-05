@@ -188,7 +188,7 @@ class ProductController extends Controller
             $json = response()->json([
                 'id' => $product->id,
                 'title' => $product->product_name,
-                'size' => ['S', 'M', 'L'],
+                'size' => ['S', 'M', 'L', 'XL'],
                 'product_detail' => $product->description,
                 'price' => $product->price,
                 'images_url' => $imageUrl,
