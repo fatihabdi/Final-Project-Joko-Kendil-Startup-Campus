@@ -25,12 +25,11 @@ class AdminController extends Controller
         }
         else{
             if($request->sort_by == 'Price a_z' ){
-                $order=Order::join('users', 'users_id', '=', 'users.id')->orderBy('total','desc')->paginate($request->page_size);
+                $order=Order::join('users', 'users_id', '=', 'users.id')->where('status', 'Complete')->orderBy('total','desc')->paginate($request->page_size);
             }
             else{
-                $order=Order::join('users', 'users_id', '=', 'users.id')->orderBy('total','asc')->paginate($request->page_size);
+                $order=Order::join('users', 'users_id', '=', 'users.id')->where('status', 'Complete')->orderBy('total','asc')->paginate($request->page_size);
             }
-            // dd($order);
             $data= [];
             foreach ($order as $item) {
                 $json=response()->json([

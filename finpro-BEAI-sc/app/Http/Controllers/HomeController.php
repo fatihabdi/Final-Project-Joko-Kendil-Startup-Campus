@@ -9,19 +9,19 @@ use Illuminate\Support\Facades\View;
 use App\Http\Controllers\Controller;
 // use Illuminate\Support\Facades\Response;
 use App\Models\Category;
-use App\Models\Banner;
 use App\Models\ProductImages;
 
 class HomeController extends Controller
 {
     public function get_banner() {
-        $banner=Banner::get();
-        $data=[];
+        $banner = ProductImages::inRandomOrder()->limit(5)->get();
+        $data = [];
         foreach($banner as $item){
+            $title = explode('.', $item->image_title)[0];
             $json=response()->json([
                 'id' => $item->id,
-                'image' => $item->path_to,
-                'title' => $item->title,
+                'image' => Storage::url($item->image_title),
+                'title' => $title,
             ]);
             array_push($data,$json->original);
         }
