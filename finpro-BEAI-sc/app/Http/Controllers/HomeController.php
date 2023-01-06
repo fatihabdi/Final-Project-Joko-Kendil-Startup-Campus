@@ -14,17 +14,18 @@ use App\Models\ProductImages;
 class HomeController extends Controller
 {
     public function get_banner() {
-        $banner = ProductImages::inRandomOrder()->limit(5)->get();
+        // $banner = ProductImages::inRandomOrder()->limit(5)->get();
+        $banner = ProductImages::get()->first();
         $data = [];
-        foreach($banner as $item){
-            $title = explode('.', $item->image_title)[0];
+        // foreach($banner as $item){
+            $title = explode('.', $banner->image_title)[0];
             $json=response()->json([
-                'id' => $item->id,
-                'image' => Storage::url($item->image_title),
+                'id' => $banner->id,
+                'image' => Storage::url($banner->image_title),
                 'title' => $title,
             ]);
             array_push($data,$json->original);
-        }
+        // }
         return response()->json([
             'data' => $data
         ]);
@@ -40,7 +41,7 @@ class HomeController extends Controller
                     ->join('categories', 'products.category', '=', 'categories.id')
                     ->select('image_title')
                     ->where('categories.id', $item->id)
-                    ->get()->first();
+                    ->get()[1];
                 if (isset($img)) {
                     $json = response()->json([
                         'id' => $item->id,
